@@ -1,24 +1,48 @@
 class Game{
 	constructor(){
+
 		if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-		this.container;this.stats;this.camera;this.scene;this.renderer;this.debug = true;this.debugPhysics = true;
-		this.fixedTimeStep = 1.0/60.0;this.model;
+		
+		this.container;
+		this.stats;
+		this.camera;
+		this.scene;
+		this.renderer;
+		this.debug = false;
+		this.debugPhysics = true;
+		this.fixedTimeStep = 1.0/60.0;
+		this.model;
 		this.container = document.createElement( 'div' );
 		this.container.style.height = '100%';
+
+		this.speed_factor = 1;
+
 		document.body.appendChild( this.container );
+		
 		const game = this;
+		
 		this.js = { forward:0, turn:0 };
 		this.clock = new THREE.Clock();
 
 		this.init();
+		
+		window.onError = function(error){
+			console.error(JSON.stringify(error));
 		}
+	}
 	
 	init() {
-		this.scene = new THREE.Scene();this.scene.background = new THREE.Color( 0xafa0a0 );
 		this.carbody;
-		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 2000 );
-		this.camera.position.set( 0,20,-8 );
-		this.camera.lookAt(new THREE.Vector3(0,1,0));
+		this.camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 2000 );
+		this.camera.position.set( 10, 100, 400 );
+
+		this.speed_factor = 1;
+
+		this.scene = new THREE.Scene();
+		
+		//this.scene.background = new THREE.Color( 0xafa0a0 );
+		this.scene.background = new THREE.TextureLoader().load( 'textures/sky.png' );
+		
 		this.renderer = new THREE.WebGLRenderer( { antialias: true } );
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
@@ -28,7 +52,7 @@ class Game{
         this.helper = new CannonHelper(this.scene);
         this.helper.addLights(this.renderer);
         
-		//window.addEventListener( 'resize', function(){ this.onWindowResize(); }, false );
+		window.addEventListener( 'resize', function(){ this.onWindowResize(); }, false );
 
 		// stats
 		if (this.debug){
@@ -53,50 +77,11 @@ class Game{
         const world = new CANNON.World();
 		this.world = world;
 		
-		world.broadphase = new CANNON.NaiveBroadphase();world.gravity.set(0, -5, 0);world.defaultContactMaterial.friction = 0;
-		
+		world.broadphase = new CANNON.SAPBroadphase(world);
+		world.gravity.set(0, -5, 0);
+		world.defaultContactMaterial.friction = 0;
+
 		const groundMaterial = new CANNON.Material("groundMaterial");
-		
-		let matrix = [];
-		let sizeX = 64,sizeY = 64;
-		for (let i = 0; i < sizeX; i++) {
-			matrix.push([]);
-			for (var j = 0; j < sizeY; j++) {
-				var height = Math.cos(i / sizeX * Math.PI * 5) * Math.cos(j/sizeY * Math.PI * 5) * 2 + 2;
-				if(i===0 || i === sizeX-1 || j===0 || j === sizeY-1)
-					height = 3;
-				matrix[i].push(0); // can change the height. by pushing height
-			}
-		}
-
-		var hfShape = new CANNON.Heightfield(matrix, {
-			elementSize: 100 / sizeX
-		});
-		var hfBody = new CANNON.Body({ mass: 0 });
-		hfBody.addShape(hfShape);
-		hfBody.position.set(-sizeX * hfShape.elementSize / 2, -4, sizeY * hfShape.elementSize / 2);
-		hfBody.quaternion.setFromAxisAngle( new CANNON.Vec3(1,0,0), -Math.PI/2);
-		world.add(hfBody);
-		this.helper.addVisual(hfBody, 'landscape');
-
-		// const buildingmaterial=new CANNON.Material();
-		// var building=new CANNON.Body({mass:5,material:buildingmaterial});
-		// this.box = new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5));
-		// building.addShape(this.box);
-		// building.position.set(-sizeX * hfShape.elementSize / 2, -4, sizeY * hfShape.elementSize);
-		// building.linearDamping=this.damping;
-		// world.add(building);
-		// this.helper.addVisual(building,'building');
-		// this.groundMaterial=groundMaterial;
-
-		const buildingShape = new CANNON.Box(new CANNON.Vec3(5, 30, 3)); 
-		const buildingBody = new CANNON.Body({ mass: 2000});
-		buildingBody.addShape(buildingShape);
-		buildingBody.position.set(-30,3,30);
-		this.helper.addVisual(buildingBody, 'building');
-		
-
-
 		const wheelMaterial = new CANNON.Material("wheelMaterial");
 		const wheelGroundContactMaterial = new CANNON.ContactMaterial(wheelMaterial, groundMaterial, {
 			friction: 0.3,
@@ -108,27 +93,115 @@ class Game{
 		world.addContactMaterial(wheelGroundContactMaterial);
 		///////////////////////////////////////////////////////////////////////////////////////////////////
 		const loader = new THREE.GLTFLoader();
+		
 		loader.load('MudangE.gltf', function(gltf){
 		game.model = gltf.scene.children[0];
 		game.model.scale.set(1.2,1.2,1.2);
+
+		game.model.rotation.z = 90;
 		game.scene.add(game.model);
-		game.model.position.set(0,4,0);
-		 });
-		///////////////////////////////////////////////////////////////////////////////////////////////////
+		});
+
+
+		// Gachon University; square
+		new THREE.GLTFLoader().load('gachon_square_v6.gltf', function(gltf){
+		game.model2 = gltf.scene.children[0];
+		game.model2.scale.set(1.9, 1.9, 1.9);
+		game.scene.add(game.model2);
+		game.model2.position.set(-0,-4,-43);
+	    });
+
+		new THREE.GLTFLoader().load('it.gltf', function(gltf){  
+		game.model3 = gltf.scene.children[0];
+		game.model3.scale.set(.7, .7, .7);
+		game.scene.add(game.model3);
+		game.model3.position.set(-37,10,35);
+
+		// add the event that when the car is close to the building, the building will be destroyed
+		game.model3.addEventListener('click', function(other_object, relative_velocity, relative_rotation, contact_normal){
+			if (other_object == game.vehicle.chassisBody){
+				game.model3.visible = false;
+				game.model3.position.set(0,0,0);
+				game.model3.removeEventListener('collision');
+			} });
+		
+		});
+
+		new THREE.GLTFLoader().load('vision_tower3.gltf', function(gltf){
+			game.model4 = gltf.scene.children[0];
+			game.model4.scale.set(10, 10, 5);
+			game.scene.add(game.model4);
+			game.model4.position.set(30,5,43.5);
+
+			game.model4.rotation.z = Math.PI;
+			game.model4.rotation.y = Math.PI;
+			});
+
+		new THREE.GLTFLoader().load('ground_v2.gltf', function(gltf){
+			game.model5 = gltf.scene.children[0];
+			game.model5.scale.set(50, 0.5, 50);
+			game.scene.add(game.model5);
+			game.model5.position.set(0, -4.3, 0);
+			game.model5.rotation.z = Math.PI;
+			game.model5.rotation.y = Math.PI / 2;
+			});
+
+		
+		function gltf_load(gltf, x, y, z){
+			new THREE.GLTFLoader().load(gltf, function(gltf){
+				gltf.scene.children[0].scale.set(12, 12, 12);
+				gltf.scene.children[0].position.set(x, y, z);
+				game.scene.add(gltf.scene.children[0]);
+			});
+		}
+
+		var tree_x = [10, 10, -10, -10, 20, 20, -20, -20, 30, 30, -30, 
+		35, 35, -35, 0, 35, -5, -35];
+		var tree_z = [10, -10, 10, -10, 10, -10, 10, -10, 35, -35, -35,
+		35, -35, -35, 35, -35, 35, -35];
+		
+		for (var i = 0; i < 18; i++){
+			gltf_load('stylized_tree/scene.gltf', tree_x[i], -4.3, tree_z[i]);
+		} 
 
 		// const chassisShape = new CANNON.Box(new CANNON.Vec3(1, 0.5, 2)); //가로 2미터, 높이 1미터, 세로 4미터, 
-		const controls=new THREE.OrbitControls(this.camera,this.renderer.domElement);
+		const controls = new THREE.OrbitControls(this.camera,this.renderer.domElement);
 		const chassisShape = new CANNON.Box(new CANNON.Vec3(1, 0.5, 3)); 
 		const chassisBody = new CANNON.Body({ mass: 2000});
 		chassisBody.addShape(chassisShape);
-		chassisBody.position.set(0, 4, 0);
+		chassisBody.position.set(-20, 4, 22);
+
+		// chassisBody.threemesh.y = -chassisBody.threemesh.position.y;
+
+		/**
+		 * 
+		 */
+		// rotation setting
+		var axis = new CANNON.Vec3(0, 1, 0);
+		var angle = Math.PI/ 2;
+		chassisBody.quaternion.setFromAxisAngle(axis, angle); 
+		
+		chassisBody.angularVelocity.set(0, 0, 0);
 		this.helper.addVisual(chassisBody, 'car');
 		this.carbody=chassisBody;
+
+		// add backward chasing camera
 		this.followCam = new THREE.Object3D(); //쫓아가는 카메라
-		this.followCam.position.copy(this.camera.position);
+
+		/***
+		 * 
+		 * 
+		 * Cam view setting 
+		 * 
+		 * vvvvvv
+		 */
+		// set followCam position, except y-axis
+		this.followCam.position.set(15, 20, -30);
+
+		// this.followCam.position.copy((this.camera.position));
 		this.scene.add(this.followCam);
-		this.followCam.parent = chassisBody.threemesh; //chassisbody를 패런트로 붙혀서 
-        this.helper.shadowTarget = chassisBody.threemesh;
+		this.followCam.parent = chassisBody.threemesh; //chassisbody를 parent 로 연결  
+        this.helper.shadowTarget = chassisBody.threemesh; 
 
 		const options = {
 			radius: 0.5,//바퀴 반지름
@@ -194,15 +267,36 @@ class Game{
 		
 		this.vehicle = vehicle;
 
-		
+		let matrix = [];
+		let sizeX = 64,
+			sizeY = 64;
 
+		for (let i = 0; i < sizeX; i++) {
+			matrix.push([]);
+			for (var j = 0; j < sizeY; j++) {
+				var height = Math.cos(i / sizeX * Math.PI * 5) * Math.cos(j/sizeY * Math.PI * 5) * 2 + 2;
+				if(i===0 || i === sizeX-1 || j===0 || j === sizeY-1)
+					height = 3;
+				matrix[i].push(0); // flatten the ground
+			}
+		}
+
+		var hfShape = new CANNON.Heightfield(matrix, {
+			elementSize: 100 / sizeX
+		});
+		var hfBody = new CANNON.Body({ mass: 0 });
+		hfBody.addShape(hfShape);
+		hfBody.position.set(-sizeX * hfShape.elementSize / 2, -4, sizeY * hfShape.elementSize / 2);
+		hfBody.quaternion.setFromAxisAngle( new CANNON.Vec3(1,0,0), -Math.PI/2);
+		world.add(hfBody);
+		this.helper.addVisual(hfBody, 'landscape');
 		
-		this.animate();
+		this.animate(chassisBody);
 	}
 	
 	joystickCallback( forward, turn ){
 		this.js.forward = forward;//js for joystick
-		this.js.turn = -turn;
+		this.js.turn = turn;
 	}
 		
     updateDrive(forward=this.js.forward, turn=this.js.turn){
@@ -243,29 +337,85 @@ class Game{
 
 	updateCamera(){
 		this.camera.position.lerp(this.followCam.getWorldPosition(new THREE.Vector3()), 0.01); //0.01카메라가 움직이는 거리의 1퍼센트 까지 느리게 따라감
+		// this.camera.lookAt(this.vehicle.chassisBody.threemesh.position);
 		this.camera.lookAt(this.vehicle.chassisBody.threemesh.position);
+
         if (this.helper.sun!=undefined){
 			this.helper.sun.position.copy( this.camera.position );
 			this.helper.sun.position.y += 10;
 		}
 	}
 								   
-	animate() {
+	animate(chassisBody) { 
 		const game = this;
 		
-		requestAnimationFrame( function(){ game.animate(); } );
+		requestAnimationFrame( function(){ game.animate(chassisBody); } );
+
+		/////////////////////////////////// Button click ////////////////////////////////////
+
+		console.log(game.carbody.position);
+
+		/**
+		 * x:33.72 / z: 32.14 -> Vision tower 
+		 */
+
+		if (game.carbody.position.x < 38.72 && game.carbody.position.x > 28.72 && 
+			game.carbody.position.z > 27.14 && game.carbody.position.z < 37.14) {
+			console.log("Vision tower");
+			document.getElementById("vision_tower_info").style.visibility = "visible";
+		} else {
+			document.getElementById("vision_tower_info").style.visibility = "hidden"; 
+		}
+
+
+		document.getElementById('Close_View').addEventListener('click', function(){
+			// check if there are followCam
+			game.followCam.position.set(5, 10, -10);
+		});
+		document.getElementById('Far_View').addEventListener('click', function(){
+			game.followCam.position.set(5, 15, -30);	
+		});
+		document.getElementById('Top_View').addEventListener('click', function(){
+			game.followCam.position.set(5, 90, -30);	
+		});
+
+		document.getElementById('Reset').addEventListener('click', function(){
+			game.vehicle.chassisBody.position.set(-20, 4, 22);
+			game.vehicle.chassisBody.velocity.set(0, 0, 0);
+			game.vehicle.chassisBody.angularVelocity.set(0, 0, 0);
+			game.vehicle.chassisBody.quaternion.set(0, 0, 0, 1);
+
+			chassisBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 2); 
+		}); 
+
+		document.getElementById('Stop').addEventListener('click', function(){
+			// 1. fill the whole screen with blur
+			
+		});
+
+
+		/*
+		document.getElementById('Free').addEventListener('click', function(){
+			// detach followCam from vehicle
+			game.followCam.position.set(5, 10, -10);
+			game.followCam.parent = null;
+		}); */
 		
 		const now = Date.now();
 		if (this.lastTime===undefined) this.lastTime = now;
 		const dt = (Date.now() - this.lastTime)/1000.0;
-		this.FPSFactor = dt;
+		// this.FPSFactor = dt;
+
+		// difficulty by speed 
 		this.lastTime = now;
-		//console.log(this.carbody.position);
+		
 		this.world.step(this.fixedTimeStep, dt);
 		this.helper.updateBodies(this.world);
+		
 		this.updateDrive();
 		//console.log(this.vehicle.getWheelTransformWorld(0).position);
 		game.model.position.copy(this.carbody.position);
+		
 		game.model.quaternion.copy(this.carbody.quaternion);
 		this.updateCamera();
 		
@@ -304,8 +454,9 @@ class JoyStick{
 	
 	getMousePosition(evt){
 		let clientX = evt.targetTouches ? evt.targetTouches[0].pageX : evt.clientX;
-		let clientY = evt.targetTouches ? evt.targetTouches[0].pageY : evt.clientY;
-		return { x:-clientX, y:-clientY };
+		let clientY = evt.targetTouches ? evt.targetTouches[0].pageY : evt.clientY; 
+		return { x:clientX, y:clientY };
+		// reverse joystick: return { x:clientX, y:clientY };
 	}
 	
 	tap(evt){
@@ -343,7 +494,7 @@ class JoyStick{
 		this.domElement.style.top = `${top + this.domElement.clientHeight/2}px`;
 		this.domElement.style.left = `${left + this.domElement.clientWidth/2}px`;
 		
-		const forward = -(top - this.origin.top + this.domElement.clientHeight/2)/this.maxRadius;
+		const forward = (top - this.origin.top + this.domElement.clientHeight/2)/this.maxRadius;
 		const turn = (left - this.origin.left + this.domElement.clientWidth/2)/this.maxRadius;
 		
 		if (this.onMove!=undefined) this.onMove.call(this.game, forward, turn);
@@ -504,7 +655,7 @@ class CannonHelper{
 				break;
 
 			case CANNON.Shape.types.PLANE:
-				geometry = new THREE.PlaneGeometry(24,24,32,32);
+				geometry = new THREE.PlaneGeometry(10, 10, 4, 4);
 				mesh = new THREE.Object3D();
 				const submesh = new THREE.Object3D();
 				const ground = new THREE.Mesh( geometry, material );
