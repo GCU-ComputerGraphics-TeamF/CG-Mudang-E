@@ -127,14 +127,14 @@ class Game{
 		
 		});
 
-		new THREE.GLTFLoader().load('vision_tower3.gltf', function(gltf){
+		new THREE.GLTFLoader().load('vision_tower.gltf', function(gltf){
 			game.model4 = gltf.scene.children[0];
-			game.model4.scale.set(10, 10, 5);
+			game.model4.scale.set(5, 5, 5);
 			game.scene.add(game.model4);
 			game.model4.position.set(30,5,43.5);
 
-			game.model4.rotation.z = Math.PI;
-			game.model4.rotation.y = Math.PI;
+			game.model4.rotation.z = 0;
+			game.model4.rotation.y = 0;
 			});
 
 		new THREE.GLTFLoader().load('ground_v2.gltf', function(gltf){
@@ -145,6 +145,19 @@ class Game{
 			game.model5.rotation.z = Math.PI;
 			game.model5.rotation.y = Math.PI / 2;
 			});
+
+		new THREE.GLTFLoader().load('gachon_infinity.gltf', function(gltf){
+			game.model6 = gltf.scene.children[0];
+			game.model6.scale.set(10, 10, 10);
+			game.scene.add(game.model6);
+		});
+
+		new THREE.GLTFLoader().load('ai.gltf', function(gltf){ 
+			game.model7 = gltf.scene.children[0];
+			game.model7.scale.set(7, 7, 7);
+			game.model7.position.set(-27, 0, -43);
+			game.scene.add(game.model7);
+		});
 
 		
 		function gltf_load(gltf, x, y, z){
@@ -295,7 +308,7 @@ class Game{
 	}
 	
 	joystickCallback( forward, turn ){
-		this.js.forward = forward;//js for joystick
+		this.js.forward = forward; //js for joystick
 		this.js.turn = turn;
 	}
 		
