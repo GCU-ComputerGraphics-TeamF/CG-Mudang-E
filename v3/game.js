@@ -497,7 +497,7 @@ class Game{
 			chassisBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 2); 
 		}); 
 
-		document.getElementById('Stop').addEventListener('click', function(){
+		document.getElementById('confirm').addEventListener('click', function(){
 			// 1. fill the whole screen with blur
 			
 		}); 

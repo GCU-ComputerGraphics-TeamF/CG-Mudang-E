@@ -16,24 +16,23 @@
 		<meta property="og:image:width" content="1265" />
 		<meta property="og:image:height" content="817" />
 		<meta property="og:image:alt" content="RC Time Trial - a 3d racing game" />
- 
-		<div>
-			<button id="Close_View">Close View</button>
-			<button id="Far_View">Far View</button>
-			<button id="Top_View">Top View</button>  
-		</div> 
-
-		<div>
-			<!-- <button id="Start">Start</button> -->
-			<button id="Stop">Stop</button>
-			<button id="Reset">Reset</button>
-		</div>
-		<!--     <button id="Free">Free View</button>     --> 
+		<script src="../../libs/three.min.js"></script>
+		<script src="../../libs/Detector.js"></script>
+		<script src="../../libs/stats.min.js"></script>
+		<script src="../../libs/cannon.min.js"></script>
+		<script src="../../libs/GLTFLoader.js"></script>
+		<script src="../../libs/OrbitControls.js"></script>
+		<script src="game.js"></script>
+		<script src="button.js"></script>
+		<link rel="stylesheet" href="button.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+		
 		
 		<style>
 			body {
 				font-family: Monospace;
-				background-color: #000;
+				background-color: #fff;
 				color: #fff;
 				margin: 0px;
 				overflow: hidden;
@@ -48,7 +47,9 @@
 				font-family: "cute";
 				src: url("../fonts/CuteFont-Regular.ttf");
 			}
-
+			.clicked {
+       		 color: red;
+     		 }
 			.description {
 				color: #fff;
 				font-family: "cute";
@@ -56,7 +57,17 @@
 				font-weight: bolder;
 				text-decoration: none;
 			}
-
+			button {
+				font-size: 20px;
+  				font-weight: bold;
+   				 margin-right: 3px;
+    			background-color: #E3CEF6;
+    			border: 0;
+   				 padding: 5px 10px;
+    			color: black;
+   				 font-weight: bold;
+    			margin-bottom: 5px;
+			}
 			.panel_vision{
 				cursor: pointer;
 				font-family: "gl_korea";
@@ -87,51 +98,45 @@
 				float: right;
 			}
 
-			#easyButton{
-				position: absolute;
-				align-items: center;
-				top: 10px;
-				left: 0px;
-				width: 100%;
-				height: 100%;
-				z-index: 1;
-				background-color: green;
-				display: none;
-			}
-
-			#midButton{
-				position: absolute;
-				top:25px;
-				left: 25px;
-				width: 100%;
-				height: 100%;
-				z-index: 1;
-				background-color: yellow;
-				display: none;
-			}
-
-			#hardButton{
-				position: absolute;
-				top: 50px;
-				left: 50px;
-				width: 100%;
-				height: 100%;
-				z-index: 1;
-				background-color: red;
-				display: none;
-			}
 		</style>
 	</head>
 
 	<body> 
+		<section>
+		<div>
+			<button id="Close_View" class="View">Close View</button>
+			<button id="Far_View" class="View">Far View</button>
+			<button id="Top_View" class="View">Top View</button>  
 		
-		<script src="../../libs/three.min.js"></script>
-		<script src="../../libs/Detector.js"></script>
-		<script src="../../libs/stats.min.js"></script>
-		<script src="../../libs/cannon.min.js"></script>
-		<script src="../../libs/GLTFLoader.js"></script>
-		<script src="../../libs/OrbitControls.js"></script>
-		<script src="game.js"></script>
+			<!-- <button id="Start">Start</button> -->
+			<button id="confirm">Exit</button>
+			<script>
+				link = 'index.html'
+				function confirmModal() {
+					if (window.confirm("게임을 종료하겠습니까?")) {
+						location.href = link;
+        } else {
+          console.log("취소. 변화 없음");
+        }
+				}
+			  </script>
+			<button id="Reset">Reset</button>
+		</div>
+	</section>
+
+	<!-- confirm 모달을 쓸 페이지에 추가 start-->
+	 <section class="modal modal-section type-confirm">
+		<h1 style="color: black;">게임을 종료하겠습니까?</h1>
+		<div class="enroll_box">
+			<p class="menu_msg"></p>
+		</div>
+		<div class="enroll_btn">
+			<button class="btn pink_btn btn_ok">Yes</button>
+			<button class="btn gray_btn modal_close">No</button>
+		</div>
+	</section>
+	<!-- confirm 모달을 쓸 페이지에 추가 end-->
+		
 		<script>
 			document.addEventListener("DOMContentLoaded", function(){
 				const game = new Game();
