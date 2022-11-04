@@ -3,13 +3,6 @@
 	<head>
 
 		<title>Gachon-MuDangE-Racing-TeamF</title>
- 
-		<div id="camsel" class="camSelect"> 
-			<h1 style="color: red;">GCU Mudang-E Tour</h1>
-			<p style="color: black;">Select your view to move the Mudang-E!</p>
-		</div>
-		<!--     <button id="Free">Free View</button>     --> 
-
 		<script src="../../libs/three.min.js"></script>
 		<script src="../../libs/Detector.js"></script>
 		<script src="../../libs/stats.min.js"></script>
@@ -22,7 +15,11 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 		
-		
+		<div id="camsel" class="camSelect"> 
+			<h1 style="color: red; font-family: 'gl_korea'; font-size: 30px;">GCU Mudang-E Tour</h1>
+			<p style="color: black; font-family: 'gl_korea'; font-size:21px;">Select your view to move the Mudang-E!</p>
+		</div>
+
 		<style>
 			body {
 				font-family: Monospace;
@@ -41,11 +38,16 @@
 				font-family: "cute";
 				src: url("../fonts/CuteFont-Regular.ttf");
 			}
-
 			.clicked {
        		 color: red;
      		 }
-
+			.description {
+				color: #fff;
+				font-family: "cute";
+				font-size: 30px;
+				font-weight: bolder;
+				text-decoration: none;
+			}
 			button {
 				font-size: 20px;
   				font-weight: bold;
@@ -57,39 +59,6 @@
    				 font-weight: bold;
     			margin-bottom: 5px;
 			}
-
-			.btn {
-				border: none;
-				display: block;
-				text-align: center;
-				cursor: pointer;
-				text-transform: uppercase;
-				outline: none;
-				overflow: hidden;
-				position: relative;
-				background-color: #E3CEF6;
-				font-weight: 700;
-				font-size: 15px;
-				padding: 10px 10px;
-				box-shadow: 0 2px 2px rgba(0,0,0,0.20);
-				float: left;
-			}
-
-			.camSelect {
-				font-family: "gl_korea";
-				font-size: 20px;
-				display: block;
-				align-content: center;
-			}
-
-			.description {
-				color: #fff;
-				font-family: "cute";
-				font-size: 30px;
-				font-weight: bolder;
-				text-decoration: none;
-			}
-
 			.panel_vision{
 				cursor: pointer;
 				font-family: "gl_korea";
@@ -120,91 +89,51 @@
 				float: right;
 			}
 
-			#easyButton{
-				position: absolute;
-				align-items: center;
-				top: 10px;
-				left: 0px;
-				width: 100%;
-				height: 100%;
-				z-index: 1;
-				background-color: green;
-				display: none;
-			}
-
-			#midButton{
-				position: absolute;
-				top:25px;
-				left: 25px;
-				width: 100%;
-				height: 100%;
-				z-index: 1;
-				background-color: yellow;
-				display: none;
-			}
-
-			#hardButton{
-				position: absolute;
-				top: 50px;
-				left: 50px;
-				width: 100%;
-				height: 100%;
-				z-index: 1;
-				background-color: red;
-				display: none;
-			}
 		</style>
 	</head>
 
 	<body> 
-
 		<section>
+		<div>
+			<button id="Close_View" class="View">Close View</button>
+			<button id="Far_View" class="View">Far View</button>
+			<button id="Top_View" class="View">Top View</button>  
+		
+			<!-- <button id="Start">Start</button> -->
+			<button id="confirm">Exit</button>
+			<script>
+				link = 'index.html'
+				function confirmModal() {
+					if (window.confirm("게임을 종료하겠습니까?")) {
+						location.href = link;
+        } else {
+          console.log("취소. 변화 없음");
+        }
+				}
+			  </script>
+			<button id="Reset">Reset</button>
+		</div>
+	</section>
 
-			<div>
-				<button id="Close_View" class="btn" style="margin-top: 0px;"><span style="float: right;">Close View</span> </button>
-				<button id="Far_View" class="btn" style="margin-top: 0px;"><span style="float: right;">Far View</span> </button>
-				<button id="Top_View" class="btn" style="margin-top: 0px;"><span style="float: left;">Top View</span> </button>
-
-				<button id="confirm" class="btn">Exit</button>
-				<script>
-					link = 'index.html'
-					function confirmModal() {
-						if (window.confirm("게임을 종료하겠습니까?")) {
-							location.href = link;
-						} else {
-			 		        console.log("취소. 변화 없음");
-						} 
-					}
-				</script> 
-				<button id="Reset" class="btn" style="margin-top: 0px;"><span style="float: left;">Reset game</span> </button>
-			</div>
-
-		</section>
-
-		<!-- confirm 모달을 쓸 페이지에 추가 start-->
-		<section class="modal modal-section type-confirm">
-			<h1 style="color: black;">게임을 종료하겠습니까?</h1>
-			<div class="enroll_box">
-				<p class="menu_msg"></p>
-			</div>
-			<div class="enroll_btn">
-				<button class="btn pink_btn btn_ok">Yes</button>
-				<button class="btn gray_btn modal_close">No</button>
-			</div>
-		</section>
-		<!-- confirm 모달을 쓸 페이지에 추가 end-->
-
-		<script src="game.js"></script>
-
-
-
+	<!-- confirm 모달을 쓸 페이지에 추가 start-->
+	 <section class="modal modal-section type-confirm">
+		<h1 style="color: black;">게임을 종료하겠습니까?</h1>
+		<div class="enroll_box">
+			<p class="menu_msg"></p>
+		</div>
+		<div class="enroll_btn">
+			<button class="btn pink_btn btn_ok">Yes</button>
+			<button class="btn gray_btn modal_close">No</button>
+		</div>
+	</section>
+	<!-- confirm 모달을 쓸 페이지에 추가 end-->
+		
 		<script>
 			document.addEventListener("DOMContentLoaded", function(){
 				const game = new Game();
 				window.game = game;//For debugging only
 			});
 		</script>
-		
 
 		<div id="vision_tower_info" class="panel_vision" OnClick="location.href='https://bit.ly/3DSILLa'">
 			<h1>가천대학교 비전타워</h1>
@@ -215,11 +144,8 @@
 		<div id="IT_info" class="panel_vision" OnClick="location.href='https://bit.ly/3sYNsNu'">
 			<h1>가천대학교 IT 융합대학</h1>
 			<a href="https://bit.ly/3sYNsNu" target="_blank" class="description">
-				IT대학은 인성교육을 바탕으로 21세기 정보화 사회가 요구하는 실용, 전문 및 세계화 된 IT 분야의 인재를 양성한다.</a>
-			<a href="https://bit.ly/3sYNsNu" target="_blank" class="description">
-				즉, 정보기술 분야의 기초와 응용이론을 배우고 새로운 개념을 설계 및 연구함으로써, 급변하는 IT융합 환경에 능동적으로 대처하고,</a>
-			<a href="https://bit.ly/3sYNsNu" target="_blank" class="description">
-				국가와 국제사회에 기여할 수 있는 IT 전문가 양성을 실현하기 위해 다음과 같은 교육목표를 둔다.</a>
+				IT대학은 인성교육을 바탕으로 21세기 정보화 사회가 요구하는 실용, 전문 및 세계화 된 IT 분야의 인재를 양성한다.
+즉, 정보기술 분야의 기초와 응용이론을 배우고 새로운 개념을 설계 및 연구함으로써, 급변하는 IT융합 환경에 능동적으로 대처하고, 국가와 국제사회에 기여할 수 있는 IT 전문가 양성을 실현하기 위해 다음과 같은 교육목표를 둔다.</a>
 		</div>
 
 		<div id="AI_info" class="panel_vision" OnClick="location.href='https://bit.ly/3DZJJ8p'">
@@ -241,5 +167,4 @@
 		</div>
 	</body>
 </html>
-
 
