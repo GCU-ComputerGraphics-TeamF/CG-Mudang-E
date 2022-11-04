@@ -127,14 +127,15 @@ class Game{
 		
 		});
 
-		new THREE.GLTFLoader().load('vision_tower.gltf', function(gltf){
+		new THREE.GLTFLoader().load('test1.gltf', function(gltf){
 			game.model4 = gltf.scene.children[0];
-			game.model4.scale.set(5, 5, 5);
+			game.model4.scale.set(5, 5, 15);
 			game.scene.add(game.model4);
-			game.model4.position.set(30,5,43.5);
+			game.model4.position.set(40,5,25.5);
 
-			game.model4.rotation.z = 0;
-			game.model4.rotation.y = 0;
+			// game.model4.rotation.z = 0;
+			game.model4.rotation.y = Math.PI;
+			// game.model4.rotation.x = 0;
 			});
 
 		new THREE.GLTFLoader().load('ground_v3.gltf', function(gltf){
