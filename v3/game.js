@@ -137,7 +137,7 @@ class Game{
 			game.model4.rotation.y = 0;
 			});
 
-		new THREE.GLTFLoader().load('ground_v2.gltf', function(gltf){
+		new THREE.GLTFLoader().load('ground_v3.gltf', function(gltf){
 			game.model5 = gltf.scene.children[0];
 			game.model5.scale.set(50, 0.5, 50);
 			game.scene.add(game.model5);
@@ -154,27 +154,56 @@ class Game{
 
 		new THREE.GLTFLoader().load('ai.gltf', function(gltf){ 
 			game.model7 = gltf.scene.children[0];
-			game.model7.scale.set(7, 7, 7);
-			game.model7.position.set(-27, 0, -43);
+			game.model7.scale.set(3, 7, 14);
+			game.model7.position.set(-30, 0, -42);
 			game.scene.add(game.model7);
+
+			game.model7.rotation.y = Math.PI / 2 * 3;
+		});
+
+		new THREE.GLTFLoader().load('lion.gltf', function(gltf){
+			game.model9 = gltf.scene.children[0];
+			game.model9.scale.set(.8, .8, .8);
+			game.model9.position.set(0, -3.5, -7);
+
+			game.model9.rotation.y = Math.PI;
+
+			game.scene.add(game.model9);
 		});
 
 		
-		function gltf_load(gltf, x, y, z){
+		function gltf_load(gltf, x, y, z, sta, rot){
 			new THREE.GLTFLoader().load(gltf, function(gltf){
-				gltf.scene.children[0].scale.set(12, 12, 12);
+				if (sta) {
+					gltf.scene.children[0].scale.set(3, .75, .75);
+					if (rot) {
+						gltf.scene.children[0].rotation.y = Math.PI;
+					}
+				} else {
+				gltf.scene.children[0].scale.set(12, 12, 12);}
 				gltf.scene.children[0].position.set(x, y, z);
 				game.scene.add(gltf.scene.children[0]);
 			});
 		}
+		var sta_x = [-3.8, 30, 15.2, -31.6];
+		var sta_z = [33, 33, -33.5, -33.5];
 
-		var tree_x = [10, 10, -10, -10, 20, 20, -20, -20, 30, 30, -30, 
-		35, 35, -35, 0, 35, -5, -35];
+		for (var i = 0; i < 4; i++){
+			if (i == 0 || i == 1){
+				gltf_load('station.gltf', sta_x[i], -4, sta_z[i], true, true);} 
+			else {
+				gltf_load('station.gltf', sta_x[i], -4, sta_z[i], true, false);
+			} 
+		}
+		
+
+		var tree_x = [10, 10, -10, -10, 20, 20, -20, -20, 20, 20, -20, 
+		25, 25, -25, 0, 25, -5, -25];
 		var tree_z = [10, -10, 10, -10, 10, -10, 10, -10, 35, -35, -35,
-		35, -35, -35, 35, -35, 35, -35];
+		35, -35, -35, 45, -35, 45, -35];
 		
 		for (var i = 0; i < 18; i++){
-			gltf_load('stylized_tree/scene.gltf', tree_x[i], -4.3, tree_z[i]);
+			gltf_load('stylized_tree/scene.gltf', tree_x[i], -4.3, tree_z[i], false, false);
 		} 
 
 		// const chassisShape = new CANNON.Box(new CANNON.Vec3(1, 0.5, 2)); //가로 2미터, 높이 1미터, 세로 4미터, 
@@ -182,7 +211,9 @@ class Game{
 		const chassisShape = new CANNON.Box(new CANNON.Vec3(1, 0.5, 3)); 
 		const chassisBody = new CANNON.Body({ mass: 2000});
 		chassisBody.addShape(chassisShape);
-		chassisBody.position.set(-20, 4, 22);
+		
+		chassisBody.position.set(-20, 4, 20);
+		// chassisBody.position.set(32, 4, 30);
 
 		// chassisBody.threemesh.y = -chassisBody.threemesh.position.y;
 
@@ -369,16 +400,80 @@ class Game{
 		console.log(game.carbody.position);
 
 		/**
-		 * x:33.72 / z: 32.14 -> Vision tower 
+		 * x: 33.72 / z: 32.14 -> Vision tower 
+		 * x: -4.1 / z: 30.1  -> IT tower
+		 * x: 15.2 / z: -30.5  -> Gachon Square
+		 * x: -31.6 / z: -30.5  -> AI buildings
+		 * 0, -16 -> kakao
 		 */
+
+		 document.getElementById("vision_tower_info").style.display = "none";
+		 document.getElementById("IT_info").style.display = "none";
+		 document.getElementById("GS_info").style.display = "none";
+		 document.getElementById("AI_info").style.display = "none";
+		 document.getElementById("KAKA_info").style.display = "none";
 
 		if (game.carbody.position.x < 38.72 && game.carbody.position.x > 28.72 && 
 			game.carbody.position.z > 27.14 && game.carbody.position.z < 37.14) {
 			console.log("Vision tower");
-			document.getElementById("vision_tower_info").style.visibility = "visible";
-		} else {
-			document.getElementById("vision_tower_info").style.visibility = "hidden"; 
-		}
+			game.followCam.position.set(12, 2.4, 0);
+			document.getElementById("vision_tower_info").style.display = "block";
+		} else if (game.carbody.position.x < 1.1 && game.carbody.position.x > -9.1 && 
+			game.carbody.position.z > 25.1 && game.carbody.position.z < 35.1) { 
+			console.log("IT tower"); 
+			document.getElementById("IT_info").style.display = "block";
+
+			game.followCam.position.set(10, 1.4, 10);
+		} else if (game.carbody.position.x < 22 && game.carbody.position.x > 12 &&
+			game.carbody.position.z > -34.6 && game.carbody.position.z < -24.6) {
+			console.log("Gachon Square"); // 17, -29.6
+			document.getElementById("GS_info").style.display = "block";
+			game.followCam.position.set(12, 2.4, -5);
+		} else if (game.carbody.position.x < -26.6 && game.carbody.position.x > -36.6 &&
+			game.carbody.position.z > -35.5 && game.carbody.position.z < -25.5) {
+			console.log("AI buildings");
+			document.getElementById("AI_info").style.display = "block";
+			game.followCam.position.set(10, 1.4, 10);
+		} else if (game.carbody.position.x < 5 && game.carbody.position.x > -5 &&
+			game.carbody.position.z > -21 && game.carbody.position.z < -11) {
+            // change following camera to top view
+			game.followCam.position.set(-10, 1, 0);
+			document.getElementById("KAKA_info").style.display = "block";
+			console.log("Kakao");
+		} 
+
+		// add keyboard event
+		document.addEventListener('keydown', function(event) {
+			// use direction key
+			// don't use keycode, because it is not working on chrome
+
+			if (event.key == "ArrowUp") {
+				game.updateDrive(-2.5, 0);
+				console.log("forward");
+			} else if (event.key == "ArrowDown") {
+				game.updateDrive(2.5, 0);
+				console.log("backward");
+			} else if (event.key == "ArrowLeft") {
+				game.updateDrive(0, 1000000);
+				console.log("left");
+			} else if (event.key == "ArrowRight") {
+				game.updateDrive(0, -1000000);
+				console.log("right");
+			}
+
+
+			// change camera using 1, 2, 3
+			if (event.key == '1') {
+				game.followCam.position.set(5, 10, -10);
+				camViewMode = 0;
+			} else if (event.key == '2') {
+				game.followCam.position.set(5, 15, -30);
+				camViewMode = 1;
+			} else if (event.key == '3') {
+				game.followCam.position.set(5, 90, -30);
+				camViewMode = 2;
+			}
+		});
 
 
 		document.getElementById('Close_View').addEventListener('click', function(){
@@ -389,7 +484,7 @@ class Game{
 			game.followCam.position.set(5, 15, -30);	
 		});
 		document.getElementById('Top_View').addEventListener('click', function(){
-			game.followCam.position.set(5, 90, -30);	
+			game.followCam.position.set(5, 90, -30);
 		});
 
 		document.getElementById('Reset').addEventListener('click', function(){
@@ -404,15 +499,7 @@ class Game{
 		document.getElementById('Stop').addEventListener('click', function(){
 			// 1. fill the whole screen with blur
 			
-		});
-
-
-		/*
-		document.getElementById('Free').addEventListener('click', function(){
-			// detach followCam from vehicle
-			game.followCam.position.set(5, 10, -10);
-			game.followCam.parent = null;
-		}); */
+		}); 
 		
 		const now = Date.now();
 		if (this.lastTime===undefined) this.lastTime = now;
@@ -428,8 +515,8 @@ class Game{
 		this.updateDrive();
 		//console.log(this.vehicle.getWheelTransformWorld(0).position);
 		game.model.position.copy(this.carbody.position);
-		
 		game.model.quaternion.copy(this.carbody.quaternion);
+
 		this.updateCamera();
 		
 		this.renderer.render( this.scene, this.camera );
@@ -467,9 +554,16 @@ class JoyStick{
 	
 	getMousePosition(evt){
 		let clientX = evt.targetTouches ? evt.targetTouches[0].pageX : evt.clientX;
-		let clientY = evt.targetTouches ? evt.targetTouches[0].pageY : evt.clientY; 
+		let clientY = evt.targetTouches ? evt.targetTouches[0].pageY : evt.clientY;
+		console.log(clientX, clientY);
 		return { x:clientX, y:clientY };
 		// reverse joystick: return { x:clientX, y:clientY };
+
+		// forward = 630, 858
+		// backward = 630, 1000
+
+		// left = 550, 930
+		// right = 680, 930
 	}
 	
 	tap(evt){
