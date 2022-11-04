@@ -34,7 +34,7 @@ class Game{
 	init() {
 		this.carbody;
 		this.camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 2000 );
-		this.camera.position.set( 10, 100, 400 );
+		this.camera.position.set( 20, 150, -25 );
 
 		this.speed_factor = 1;
 
@@ -65,9 +65,7 @@ class Game{
 			onMove:this.joystickCallback
 		});
         
-		
-		
-        this.initPhysics();
+		this.initPhysics();
 	}
 	
 	initPhysics(){
@@ -127,15 +125,13 @@ class Game{
 		
 		});
 
-		new THREE.GLTFLoader().load('test1.gltf', function(gltf){
+		new THREE.GLTFLoader().load('vision_tower.gltf', function(gltf){
 			game.model4 = gltf.scene.children[0];
 			game.model4.scale.set(5, 5, 15);
 			game.scene.add(game.model4);
-			game.model4.position.set(40,5,25.5);
+			game.model4.position.set(40, 5, 25.5);
 
-			// game.model4.rotation.z = 0;
 			game.model4.rotation.y = Math.PI;
-			// game.model4.rotation.x = 0;
 			});
 
 		new THREE.GLTFLoader().load('ground_v3.gltf', function(gltf){
@@ -241,7 +237,7 @@ class Game{
 		 * vvvvvv
 		 */
 		// set followCam position, except y-axis
-		this.followCam.position.set(15, 20, -30);
+		this.followCam.position.set(45, 10, -7);
 
 		// this.followCam.position.copy((this.camera.position));
 		this.scene.add(this.followCam);
@@ -392,13 +388,12 @@ class Game{
 	}
 								   
 	animate(chassisBody) { 
-		const game = this;
-		
+		const game = this; 
 		requestAnimationFrame( function(){ game.animate(chassisBody); } );
 
 		/////////////////////////////////// Button click ////////////////////////////////////
 
-		console.log(game.carbody.position);
+		//console.log(game.carbody.position);
 
 		/**
 		 * x: 33.72 / z: 32.14 -> Vision tower 
@@ -465,27 +460,32 @@ class Game{
 
 			// change camera using 1, 2, 3
 			if (event.key == '1') {
-				game.followCam.position.set(5, 10, -10);
+				game.followCam.position.set(0, 10, -15);
+				document.getElementById("camsel").style.display = "none";
 				camViewMode = 0;
 			} else if (event.key == '2') {
-				game.followCam.position.set(5, 15, -30);
+				game.followCam.position.set(0, 15, -30);	
+				document.getElementById("camsel").style.display = "none";
 				camViewMode = 1;
 			} else if (event.key == '3') {
-				game.followCam.position.set(5, 90, -30);
+				game.followCam.position.set(0, 40, -10);
+				document.getElementById("camsel").style.display = "none";
 				camViewMode = 2;
 			}
 		});
 
-
 		document.getElementById('Close_View').addEventListener('click', function(){
 			// check if there are followCam
-			game.followCam.position.set(5, 10, -10);
+			game.followCam.position.set(0, 10, -15);
+			document.getElementById("camsel").style.display = "none";
 		});
 		document.getElementById('Far_View').addEventListener('click', function(){
-			game.followCam.position.set(5, 15, -30);	
+			game.followCam.position.set(0, 15, -30);	
+			document.getElementById("camsel").style.display = "none";
 		});
 		document.getElementById('Top_View').addEventListener('click', function(){
-			game.followCam.position.set(5, 90, -30);
+			game.followCam.position.set(0, 40, -10);
+			document.getElementById("camsel").style.display = "none";
 		});
 
 		document.getElementById('Reset').addEventListener('click', function(){
